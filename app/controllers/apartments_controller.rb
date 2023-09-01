@@ -3,7 +3,7 @@ class ApartmentsController < ApplicationController
   rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
 
   def index
-    apartments = get_list_of_apartments
+    apartments = Apartment.all
     render json: apartments, include: :leases
   end
 
@@ -16,14 +16,13 @@ class ApartmentsController < ApplicationController
     end
   end
 
-  def create
-    new_apartment = Apartment.create(apartment_params)
+  def create    
     apartments = get_list_of_apartments
-    if !apartments.include(new_apartment)
-      render json: new_apartment, status: :created
+    if apartments.include?(params[:number])
+      render json: { error: "Apartment already created" }, status: :unprocessable_entity
     else
-      new_apartment.destroy
-      render_unprocessable_entity_response
+      new_apartment = Apartment.create(apartment_params)
+      render json: new_apartment, status: :created
     end
   end
 
@@ -52,7 +51,8 @@ class ApartmentsController < ApplicationController
   end
 
   def get_list_of_apartments
-    Apartment.all
+    apartments = Apartment.all
+    apartments.map{ |apartment| apartment.number }
   end
 
   private

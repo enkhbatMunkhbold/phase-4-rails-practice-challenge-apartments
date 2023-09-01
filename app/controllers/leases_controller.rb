@@ -18,12 +18,7 @@ class LeasesController < ApplicationController
 
   def create
     new_lease = Lease.create(lease_params)
-    leases = get_list_of_leases
-    if !leases.include(new_lease)
-      render json: new_lease, status: :created
-    else
-      render_unprocessable_entity_response
-    end
+    render json: new_lease, status: :created
   end
 
   def update

@@ -16,17 +16,14 @@ class TenantsController < ApplicationController
     end
   end
 
-  def create
-    # new_tenant = Tenant.create(tenant_params)
+  def create    
     tenants = get_list_of_tenants 
-    answer = tenants.exists?(params[:name])
-    byebug
-    # if tenants.include?(new_tenant.name) 
-    #   new_tenant.destroy
-    #   render json: { error: "Tenant already created" }, status: :unprocessable_entity              
-    # else
-    #   render json: new_tenant, status: :create     
-    # end
+    if tenants.include?(params[:name]) 
+      render json: { error: "Tenant already created" }, status: :unprocessable_entity              
+    else
+      new_tenant = Tenant.create(tenant_params)
+      render json: new_tenant, status: :create     
+    end
   end
 
   def update
